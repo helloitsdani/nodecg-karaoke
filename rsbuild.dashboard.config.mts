@@ -1,25 +1,29 @@
-import { defineConfig } from '@rsbuild/core';
-import { pluginReact } from '@rsbuild/plugin-react';
+import { defineConfig } from "@rsbuild/core"
+import { pluginReact } from "@rsbuild/plugin-react"
 
 export default defineConfig({
   plugins: [pluginReact()],
 
   source: {
     entry: {
-      'song-picker': './src/dashboard/song-picker.tsx',
+      player: "./src/dashboard/player.tsx"
     }
   },
 
   dev: {
-    assetPrefix: '.',
-    writeToDisk: true,
+    assetPrefix: ".",
+    writeToDisk: true
   },
 
   output: {
-    assetPrefix: '.',
+    sourceMap: {
+      js: "cheap-module-source-map",
+      css: true
+    },
+    assetPrefix: ".",
     cleanDistPath: true,
     distPath: {
-      root: 'dashboard'
+      root: "dashboard"
     }
   }
-});
+})
