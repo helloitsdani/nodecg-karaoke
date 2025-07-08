@@ -6,7 +6,7 @@ import { useReplicant } from "@nodecg/react-hooks"
 import type { Track } from "../types"
 import { useCallback } from "react"
 
-const Player = () => {
+const KaraokeMachine = () => {
   const [, setTrack] = useReplicant<Track>("track")
 
   const onStart = useCallback(() => {
@@ -46,4 +46,4 @@ const Player = () => {
   )
 }
 
-export default Player
+export default KaraokeMachine

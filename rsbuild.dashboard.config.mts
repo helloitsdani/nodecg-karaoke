@@ -6,7 +6,7 @@ export default defineConfig({
 
   source: {
     entry: {
-      player: "./src/dashboard/player.tsx"
+      "karaoke-machine": "./src/dashboard/karaoke-machine.tsx"
     }
   },
 
