@@ -54,7 +54,7 @@ const TrackSelector = ({ onUpdateTrack }: TrackSelectorProps) => {
       onValuesChange={onValuesChange}
       onFinish={onUpdateTrack}
     >
-      <Form.Item label="Song" name="song">
+      <Form.Item label="Song" name="song" layout="horizontal">
         <Select
           placeholder="Select a song..."
           showSearch

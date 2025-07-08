@@ -2,7 +2,7 @@ import { ConfigProvider, theme } from "antd"
 import React from "react"
 import ReactDOM from "react-dom/client"
 
-import TrackSelector from "./components/TrackSelector"
+import Player from "./components/Player"
 
 const rootEl = document.getElementById("root")
 const root = ReactDOM.createRoot(rootEl!)
@@ -14,9 +14,7 @@ root.render(
         algorithm: theme.darkAlgorithm
       }}
     >
-      <div>
-        <TrackSelector onUpdateTrack={(track) => console.log(track)} />
-      </div>
+      <Player />
     </ConfigProvider>
   </React.StrictMode>
 )
