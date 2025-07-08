@@ -7,9 +7,7 @@ import type { Track } from "../types"
 import { useCallback } from "react"
 
 const Player = () => {
-  const [track, setTrack] = useReplicant<Track>("track")
-
-  console.log(track)
+  const [, setTrack] = useReplicant<Track>("track")
 
   const onStart = useCallback(() => {
     NodeCG.sendMessageToBundle("track.start", "nodecg-karaoke")
