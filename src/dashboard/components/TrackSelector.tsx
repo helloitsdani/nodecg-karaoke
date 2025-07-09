@@ -1,10 +1,11 @@
 import { Form, Select } from "antd"
+import { useCallback, useMemo } from "react"
 import { useReplicant } from "@nodecg/react-hooks"
 
-import type { Track, AssetFile } from "../types"
-import { useCallback, useMemo } from "react"
+import type { Track, AssetFile } from "../../types"
 
 interface TrackSelectorProps {
+  track?: Track
   onUpdateTrack: (track: Track) => void
 }
 
@@ -13,7 +14,7 @@ interface TrackSelectorFields {
   lyrics: string
 }
 
-const TrackSelector = ({ onUpdateTrack }: TrackSelectorProps) => {
+const TrackSelector = ({ track, onUpdateTrack }: TrackSelectorProps) => {
   const [songs] = useReplicant<AssetFile[]>("assets:songs")
   const [lyrics] = useReplicant<AssetFile[]>("assets:lyrics")
   const [trackSelectorForm] = Form.useForm<TrackSelectorFields>()
@@ -49,6 +50,7 @@ const TrackSelector = ({ onUpdateTrack }: TrackSelectorProps) => {
   return (
     <Form
       name="karaoke"
+      initialValues={track}
       form={trackSelectorForm}
       layout="horizontal"
       onValuesChange={onValuesChange}

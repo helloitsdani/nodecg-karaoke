@@ -1,13 +1,14 @@
+import { useCallback } from "react"
 import { Button, Space } from "antd"
 import { CloseCircleFilled, PlayCircleFilled } from "@ant-design/icons"
+import { useReplicant } from "@nodecg/react-hooks"
+
+import type { Track } from "../../types"
 
 import TrackSelector from "./TrackSelector"
-import { useReplicant } from "@nodecg/react-hooks"
-import type { Track } from "../types"
-import { useCallback } from "react"
 
 const KaraokeMachine = () => {
-  const [, setTrack] = useReplicant<Track>("track")
+  const [track, setTrack] = useReplicant<Track>("track")
 
   const onStart = useCallback(() => {
     NodeCG.sendMessageToBundle("track.start", "nodecg-karaoke")
@@ -19,7 +20,7 @@ const KaraokeMachine = () => {
 
   return (
     <div>
-      <TrackSelector onUpdateTrack={setTrack} />
+      <TrackSelector track={track} onUpdateTrack={setTrack} />
 
       <Space size="middle">
         <Button
@@ -39,7 +40,7 @@ const KaraokeMachine = () => {
           onClick={onStop}
           icon={<CloseCircleFilled />}
         >
-          Pause
+          Stop
         </Button>
       </Space>
     </div>
