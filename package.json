@@ -9,6 +9,7 @@
     "build:graphics": "rsbuild build --config rsbuild.graphics.config.mts"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.82.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },

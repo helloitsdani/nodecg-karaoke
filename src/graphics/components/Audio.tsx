@@ -2,11 +2,11 @@ import { useListenFor } from "@nodecg/react-hooks"
 import { useEffect, useRef } from "react"
 
 interface AudioProps {
-  song?: string
+  src?: string
   onTimeUpdate?: (newPlayheadPosition: number) => void
 }
 
-const Audio = ({ song = "", onTimeUpdate }: AudioProps) => {
+const Audio = ({ src = "", onTimeUpdate }: AudioProps) => {
   const audioRef = useRef<HTMLAudioElement>(null)
 
   useListenFor("track.start", () => {
@@ -38,7 +38,7 @@ const Audio = ({ song = "", onTimeUpdate }: AudioProps) => {
     }
   }, [onTimeUpdate])
 
-  return <audio hidden src={song} ref={audioRef} />
+  return <audio hidden src={src} ref={audioRef} />
 }
 
 export default Audio

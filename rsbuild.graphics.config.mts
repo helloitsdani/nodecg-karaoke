@@ -16,8 +16,9 @@ export default defineConfig({
   },
 
   output: {
+    minify: false,
     sourceMap: {
-      js: "cheap-module-source-map",
+      js: "inline-cheap-module-source-map",
       css: true
     },
     assetPrefix: ".",

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { useReplicant } from "@nodecg/react-hooks"
 
 import type { Track } from "../../types"
@@ -16,14 +16,16 @@ const Player = () => {
       {playheadPosition}
 
       <Audio
-        song={track?.song}
+        src={track?.song}
         onTimeUpdate={(newPlayheadPosition) => {
           console.log(newPlayheadPosition)
           setPlayheadPosition(newPlayheadPosition)
         }}
       />
 
-      <Lyrics />
+      <Suspense fallback="uh">
+        <Lyrics src={track?.lyrics} />
+      </Suspense>
     </>
   )
 }
