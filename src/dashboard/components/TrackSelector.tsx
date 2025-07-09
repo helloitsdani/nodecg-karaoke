@@ -1,5 +1,5 @@
 import { Form, Select } from "antd"
-import { useCallback, useMemo } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import { useReplicant } from "@nodecg/react-hooks"
 
 import type { Track, AssetFile } from "../../types"
@@ -46,6 +46,14 @@ const TrackSelector = ({ track, onUpdateTrack }: TrackSelectorProps) => {
     },
     [songs, lyrics, trackSelectorForm]
   )
+
+  useEffect(() => {
+    if (!track) {
+      return
+    }
+
+    trackSelectorForm.setFieldsValue(track)
+  }, [track, trackSelectorForm])
 
   return (
     <Form
