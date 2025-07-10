@@ -8,23 +8,19 @@ import Audio from "./Audio"
 
 const Player = () => {
   const [track] = useReplicant<Track>("track")
-  const [playheadPosition, setPlayheadPosition] = useState(0)
+  const [currentTime, setCurrentTime] = useState(0)
 
   return (
     <>
-      {JSON.stringify(track)}
-      {playheadPosition}
-
       <Audio
         src={track?.song}
         onTimeUpdate={(newPlayheadPosition) => {
-          console.log(newPlayheadPosition)
-          setPlayheadPosition(newPlayheadPosition)
+          setCurrentTime(newPlayheadPosition * 1000)
         }}
       />
 
-      <Suspense fallback="uh">
-        <Lyrics src={track?.lyrics} />
+      <Suspense>
+        <Lyrics src={track?.lyrics} currentTime={currentTime} />
       </Suspense>
     </>
   )

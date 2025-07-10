@@ -1,9 +1,10 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { parse } from "clrc"
+import { LineType, parse, type LyricLine } from "clrc"
+import { useMemo } from "react"
 
 interface LyricsProps {
   src?: string
-  time?: number
+  currentTime?: number
 }
 
 const fetchLyrics = async (src?: string) => {
@@ -17,18 +18,57 @@ const fetchLyrics = async (src?: string) => {
   return parse(plainLyrics)
 }
 
-const Lyrics = ({ src, time = 0 }: LyricsProps) => {
-  const { data: lyrics } = useSuspenseQuery({
+const useLyrics = (src?: string) => {
+  const { data: lines } = useSuspenseQuery({
     queryKey: ["lyrics", src],
     queryFn: () => fetchLyrics(src)
   })
 
+  const lyrics = useMemo(
+    () => lines.filter((line) => line.type === LineType.LYRIC),
+    [lines]
+  )
+  const metadata = useMemo(
+    () => lines.filter((line) => line.type === LineType.METADATA),
+    [lines]
+  )
+
+  return [lyrics, metadata] as const
+}
+
+const useVisibleLyrics = (
+  lines: Array<LyricLine>,
+  currentTime: number,
+  leadTime: number = 0
+): Array<LyricLine | undefined> => {
+  const activeLineStart = currentTime + leadTime
+  let activeLineIdx = -1
+
+  for (let idx = 0; idx <= lines.length; idx++) {
+    if (lines[idx]?.startMillisecond > activeLineStart) {
+      break
+    }
+
+    activeLineIdx = idx
+  }
+
+  return [lines[activeLineIdx], lines[activeLineIdx + 1]]
+}
+
+const Lyrics = ({ src, currentTime = 0 }: LyricsProps) => {
+  const [lyrics] = useLyrics(src)
+  const [currentLine, nextLine] = useVisibleLyrics(lyrics, currentTime, 250)
+
   return (
-    <div>
-      {lyrics.map((line) => (
-        <div key={line.lineNumber}>{JSON.stringify(line)}</div>
-      ))}
-    </div>
+    <>
+      <h1>{currentLine?.content}</h1>
+      <h2>{nextLine?.content}</h2>
+      <div>
+        {lyrics.map((line) => (
+          <div key={line.lineNumber}>{JSON.stringify(line)}</div>
+        ))}
+      </div>
+    </>
   )
 }
 
