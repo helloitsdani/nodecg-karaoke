@@ -1,0 +1,67 @@
+.NowPlaying {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  width: 60vw;
+  top: 2vw;
+
+  color: white;
+  background: linear-gradient(
+    to right,
+    rgba(0 0 0 / 95%) 240px,
+    rgba(0 0 0 / 80%) 240px,
+    transparent 100%
+  );
+
+  font-family: "Clearwater", sans-serif;
+  font-size: 28px;
+  line-height: 40px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.NowPlaying__Label {
+  display: block;
+  width: 240px;
+  text-align: center;
+}
+
+.Title {
+  position: absolute;
+  z-index: 2;
+  top: 2vw;
+  left: 240px;
+  min-width: 100px;
+  padding: 0 0.75em;
+
+  color: white;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 0.2em black;
+
+  font-family: "Clearwater", sans-serif;
+  font-size: 28px;
+  line-height: 40px;
+  text-align: center;
+}
+
+.Lines {
+  position: absolute;
+  bottom: 0;
+  left: 10vw;
+  width: 80vw;
+  height: 25vh;
+
+  font-family: "Franxurter Totally", sans-serif;
+  font-size: 56px;
+  line-height: 62px;
+  text-align: center;
+
+  color: white;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 0.2em black;
+  filter: drop-shadow(0.05em 0.05em black);
+}
+
+.Line {
+  height: 56px;
+}

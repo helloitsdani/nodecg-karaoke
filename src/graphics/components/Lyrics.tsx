@@ -1,10 +1,26 @@
-import { useSuspenseQuery } from "@tanstack/react-query"
-import { LineType, parse, type LyricLine } from "clrc"
 import { useMemo } from "react"
+import { LineType, parse, type LyricLine } from "clrc"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { motion, AnimatePresence } from "motion/react"
+
+import classes from "./Player.module.css"
 
 interface LyricsProps {
   src?: string
   currentTime?: number
+}
+
+interface Metadata {
+  ti: string
+  ar: string
+}
+
+const PLACEHOLDER_LYRIC_LINE: LyricLine = {
+  type: LineType.LYRIC,
+  startMillisecond: -1,
+  raw: "",
+  content: "",
+  lineNumber: -1
 }
 
 const fetchLyrics = async (src?: string) => {
@@ -29,7 +45,19 @@ const useLyrics = (src?: string) => {
     [lines]
   )
   const metadata = useMemo(
-    () => lines.filter((line) => line.type === LineType.METADATA),
+    () =>
+      lines
+        .filter((line) => line.type === LineType.METADATA)
+        .reduce<Metadata>(
+          (meta, line) => {
+            meta[line.key as keyof Metadata] = line.value
+            return meta
+          },
+          {
+            ti: "Untitled",
+            ar: "Unknown Artist"
+          }
+        ),
     [lines]
   )
 
@@ -52,22 +80,64 @@ const useVisibleLyrics = (
     activeLineIdx = idx
   }
 
-  return [lines[activeLineIdx], lines[activeLineIdx + 1]]
+  return [
+    lines[activeLineIdx] ?? PLACEHOLDER_LYRIC_LINE,
+    lines[activeLineIdx + 1] ?? PLACEHOLDER_LYRIC_LINE
+  ]
 }
 
 const Lyrics = ({ src, currentTime = 0 }: LyricsProps) => {
-  const [lyrics] = useLyrics(src)
-  const [currentLine, nextLine] = useVisibleLyrics(lyrics, currentTime, 250)
+  const [lyrics, metadata] = useLyrics(src)
+  const [currentLine, nextLine] = useVisibleLyrics(lyrics, currentTime, 300)
 
   return (
     <>
-      <h1>{currentLine?.content}</h1>
-      <h2>{nextLine?.content}</h2>
-      <div>
-        {lyrics.map((line) => (
-          <div key={line.lineNumber}>{JSON.stringify(line)}</div>
-        ))}
-      </div>
+      <motion.div
+        key={src}
+        className={classes.Title}
+        layout
+        initial={{ opacity: 0, y: "10%" }}
+        animate={{ opacity: 1, y: 0, x: 0, transition: { delay: 0.33 } }}
+        exit={{ opacity: 0, x: "-10%" }}
+        transition={{ duration: 0.33, ease: "easeInOut" }}
+      >
+        {metadata.ar} - {metadata.ti}
+      </motion.div>
+
+      <motion.div
+        className={classes.Lines}
+        animate={{ opacity: currentTime > 0 ? 1 : 0 }}
+        initial={{ opacity: 0 }}
+        transition={{ duration: 0.33, ease: "easeOut" }}
+      >
+        <AnimatePresence key={src}>
+          {currentLine && (
+            <motion.div
+              key={currentLine.lineNumber}
+              className={classes.Line}
+              layout
+              animate={{ scale: 1 }}
+              exit={{ opacity: 0, marginTop: "-56px" }}
+              transition={{ duration: 0.33, ease: "easeInOut" }}
+            >
+              {currentLine.content !== "" ? currentLine.content : "♪"}
+            </motion.div>
+          )}
+
+          {nextLine && (
+            <motion.div
+              key={nextLine.lineNumber}
+              className={classes.Line}
+              layout
+              initial={{ opacity: 0, scale: 0.65 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.33, ease: "easeInOut", delay: 0.15 }}
+            >
+              {nextLine.content !== "" ? nextLine.content : "♪"}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </>
   )
 }
