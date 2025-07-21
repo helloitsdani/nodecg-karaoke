@@ -1,5 +1,5 @@
-import { Suspense, useState } from "react"
-import { useReplicant } from "@nodecg/react-hooks"
+import { useEffect, useState } from "react"
+import { useReplicant, useListenFor } from "@nodecg/react-hooks"
 
 import type { Track } from "../../types"
 
@@ -7,11 +7,24 @@ import Lyrics from "./Lyrics"
 import Audio from "./Audio"
 
 import classes from "./Player.module.css"
-import { AnimatePresence } from "motion/react"
 
 const Player = () => {
   const [track] = useReplicant<Track>("track")
+  const [playing, setPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
+
+  useListenFor("track.start", () => {
+    setPlaying(true)
+  })
+
+  useListenFor("track.stop", () => {
+    setPlaying(false)
+  })
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: rerun when track changes
+  useEffect(() => {
+    setPlaying(false)
+  }, [track])
 
   return (
     <>
@@ -21,16 +34,13 @@ const Player = () => {
 
       <Audio
         src={track?.song}
+        playing={playing}
         onTimeUpdate={(newPlayheadPosition) => {
           setCurrentTime(newPlayheadPosition * 1000)
         }}
       />
 
-      <AnimatePresence propagate>
-        <Suspense>
-          <Lyrics src={track?.lyrics} currentTime={currentTime} />
-        </Suspense>
-      </AnimatePresence>
+      <Lyrics src={track?.lyrics} playing={playing} currentTime={currentTime} />
     </>
   )
 }

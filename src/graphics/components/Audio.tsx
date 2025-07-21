@@ -1,44 +1,48 @@
-import { useListenFor } from "@nodecg/react-hooks"
 import { useEffect, useRef } from "react"
 
 interface AudioProps {
   src?: string
+  playing: boolean
   onTimeUpdate?: (newPlayheadPosition: number) => void
 }
 
-const Audio = ({ src = "", onTimeUpdate }: AudioProps) => {
+const Audio = ({ src = "", playing = false, onTimeUpdate }: AudioProps) => {
   const audioRef = useRef<HTMLAudioElement>(null)
 
-  useListenFor("track.start", () => {
+  useEffect(() => {
     if (!audioRef.current) {
       return
     }
 
-    audioRef.current.play()
-  })
-
-  useListenFor("track.stop", () => {
-    if (!audioRef.current) {
-      return
+    if (playing) {
+      audioRef.current.play()
+    } else {
+      audioRef.current.pause()
+      audioRef.current.currentTime = 0
     }
-
-    audioRef.current.pause()
-    audioRef.current.currentTime = 0
-  })
+  }, [playing])
 
   useEffect(() => {
     const onTimeUpdateEvent = () => {
       onTimeUpdate?.(audioRef.current?.currentTime ?? 0)
     }
 
+    const onTimeResetEvent = () => {
+      onTimeUpdate?.(0)
+    }
+
+    audioRef.current?.addEventListener("loadeddata", onTimeResetEvent)
+    audioRef.current?.addEventListener("ended", onTimeResetEvent)
     audioRef.current?.addEventListener("timeupdate", onTimeUpdateEvent)
 
     return () => {
+      audioRef.current?.removeEventListener("loadeddata", onTimeResetEvent)
+      audioRef.current?.removeEventListener("ended", onTimeResetEvent)
       audioRef.current?.removeEventListener("timeupdate", onTimeUpdateEvent)
     }
   }, [onTimeUpdate])
 
-  return <audio hidden src={src} ref={audioRef} />
+  return <audio key={src} src={src} hidden ref={audioRef} />
 }
 
 export default Audio
