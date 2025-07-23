@@ -50,7 +50,7 @@ const Player = () => {
         src={track?.src}
         playing={playing}
         onTimeUpdate={(newPlayheadPosition) => {
-          setCurrentTime(Math.round(newPlayheadPosition) * 1000)
+          setCurrentTime(Math.round(newPlayheadPosition * 1000))
         }}
       />
 
