@@ -2,35 +2,34 @@
   position: absolute;
   z-index: 1;
   left: 0;
+  top: 2em;
   width: 60vw;
-  top: 2vw;
 
   color: white;
   background: linear-gradient(
     to right,
-    rgba(0 0 0 / 95%) 240px,
-    rgba(0 0 0 / 80%) 240px,
+    rgba(0 0 0 / 95%) 260px,
+    rgba(0 0 0 / 80%) 260px,
     transparent 100%
   );
 
   font-family: "Clearwater", sans-serif;
   font-size: 28px;
   line-height: 40px;
-  text-transform: uppercase;
   text-align: center;
 }
 
 .NowPlaying__Label {
   display: block;
-  width: 240px;
+  width: 220px;
+  margin-left: 40px;
   text-align: center;
 }
 
-.Title {
+.NowPlaying__Title {
   position: absolute;
-  z-index: 2;
-  top: 2vw;
-  left: 240px;
+  top: 0;
+  left: 260px;
   min-width: 100px;
   padding: 0 0.75em;
 

@@ -10,15 +10,10 @@ const Audio = ({ src = "", playing = false, onTimeUpdate }: AudioProps) => {
   const audioRef = useRef<HTMLAudioElement>(null)
 
   useEffect(() => {
-    if (!audioRef.current) {
-      return
-    }
-
     if (playing) {
-      audioRef.current.play()
+      audioRef.current?.play()
     } else {
-      audioRef.current.pause()
-      audioRef.current.currentTime = 0
+      audioRef.current?.pause()
     }
   }, [playing])
 
@@ -28,21 +23,25 @@ const Audio = ({ src = "", playing = false, onTimeUpdate }: AudioProps) => {
     }
 
     const onTimeResetEvent = () => {
-      onTimeUpdate?.(0)
+      if (!audioRef.current) {
+        return
+      }
+
+      audioRef.current.currentTime = 0
     }
 
     audioRef.current?.addEventListener("loadeddata", onTimeResetEvent)
-    audioRef.current?.addEventListener("ended", onTimeResetEvent)
+    audioRef.current?.addEventListener("pause", onTimeResetEvent)
     audioRef.current?.addEventListener("timeupdate", onTimeUpdateEvent)
 
     return () => {
       audioRef.current?.removeEventListener("loadeddata", onTimeResetEvent)
-      audioRef.current?.removeEventListener("ended", onTimeResetEvent)
+      audioRef.current?.removeEventListener("pause", onTimeResetEvent)
       audioRef.current?.removeEventListener("timeupdate", onTimeUpdateEvent)
     }
   }, [onTimeUpdate])
 
-  return <audio key={src} src={src} hidden ref={audioRef} />
+  return <audio hidden key={src} src={src} ref={audioRef} />
 }
 
 export default Audio
