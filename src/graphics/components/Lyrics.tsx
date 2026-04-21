@@ -3,6 +3,11 @@ import { motion, AnimatePresence } from "motion/react"
 
 import classes from "./Player.module.css"
 
+interface LyricLineProps {
+  line: LyricLine
+  nextLine?: LyricLine
+}
+
 interface LyricsProps {
   lines: Array<LyricLine>
   playing: boolean
@@ -39,6 +44,18 @@ const useVisibleLyrics = (
   ] as const
 }
 
+const LyricsLine = ({ line, nextLine }: LyricLineProps) => {
+  if (line.content !== "") {
+    return line.content
+  }
+
+  if (!nextLine) {
+    return ""
+  }
+
+  return "♪"
+}
+
 const Lyrics = ({ lines, playing = false, currentTime = 0 }: LyricsProps) => {
   const [currentLine, nextLine] = useVisibleLyrics(lines, currentTime, 300)
 
@@ -53,7 +70,7 @@ const Lyrics = ({ lines, playing = false, currentTime = 0 }: LyricsProps) => {
           exit={{ opacity: 0, y: "-10%" }}
           transition={{ duration: 0.33, ease: "easeOut" }}
         >
-          <AnimatePresence initial={false}>
+          <AnimatePresence mode="popLayout" initial={false}>
             {currentLine && (
               <motion.div
                 key={currentLine.lineNumber}
@@ -64,7 +81,7 @@ const Lyrics = ({ lines, playing = false, currentTime = 0 }: LyricsProps) => {
                 exit={{ opacity: 0, marginTop: "-56px" }}
                 transition={{ duration: 0.33, ease: "easeInOut" }}
               >
-                {currentLine.content !== "" ? currentLine.content : "♪"}
+                <LyricsLine line={currentLine} nextLine={nextLine} />
               </motion.div>
             )}
 
@@ -82,7 +99,7 @@ const Lyrics = ({ lines, playing = false, currentTime = 0 }: LyricsProps) => {
                   delay: 0.15
                 }}
               >
-                {nextLine.content !== "" ? nextLine.content : "♪"}
+                <LyricsLine line={nextLine} />
               </motion.div>
             )}
           </AnimatePresence>

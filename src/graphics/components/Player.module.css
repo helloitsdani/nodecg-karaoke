@@ -3,14 +3,14 @@
   z-index: 1;
   left: 0;
   top: 2em;
-  width: 60vw;
+  width: 80vw;
 
   color: white;
   background: linear-gradient(
     to right,
     rgba(0 0 0 / 95%) 260px,
     rgba(0 0 0 / 80%) 260px,
-    transparent 100%
+    transparent 90%
   );
 
   font-family: "Clearwater", sans-serif;
@@ -46,8 +46,8 @@
 .Lines {
   position: absolute;
   bottom: 0;
-  left: 10vw;
-  width: 80vw;
+  left: 0;
+  width: 100vw;
   height: 25vh;
 
   font-family: "Franxurter Totally", sans-serif;

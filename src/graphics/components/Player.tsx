@@ -26,29 +26,37 @@ const Player = () => {
     setPlaying(false)
   }, [track])
 
+  console.log("playing", playing)
+
   return (
     <>
       <div className={classes.NowPlaying}>
         <span className={classes.NowPlaying__Label}>Now Playing ♪</span>
 
         <AnimatePresence propagate>
-          <motion.div
-            key={`${track?.src}-title`}
-            className={classes.NowPlaying__Title}
-            layout
-            initial={{ opacity: 0, y: "10%" }}
-            animate={{ opacity: 1, y: 0, transition: { delay: 0.33 } }}
-            exit={{ opacity: 0, y: "-10%" }}
-            transition={{ duration: 0.33, ease: "easeInOut" }}
-          >
-            {track?.artist} - {track?.title}
-          </motion.div>
+          {playing && (
+            <motion.div
+              key={`${track?.src}-title`}
+              className={classes.NowPlaying__Title}
+              layout
+              initial={{ opacity: 0, y: "10%" }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: "-10%" }}
+              transition={{ duration: 0.33, ease: "easeInOut" }}
+            >
+              {track?.artist} - {track?.title}
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
 
       <Audio
         src={track?.src}
         playing={playing}
+        onFinish={() => {
+          console.log("finished")
+          setPlaying(false)
+        }}
         onTimeUpdate={(newPlayheadPosition) => {
           setCurrentTime(Math.round(newPlayheadPosition * 1000))
         }}
