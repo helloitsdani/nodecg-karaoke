@@ -85,6 +85,7 @@ const VocalistsForm = ({
                   <ColorPicker
                     mode="single"
                     defaultValue="#FFFFFF"
+                    placement="right"
                     disabledAlpha
                     disabledFormat
                   />

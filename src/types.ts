@@ -10,12 +10,22 @@ export interface TrackVoice {
   vocalist?: Vocalist
 }
 
+export interface TrackLyricLinePart {
+  index: number
+  content: string
+  vocalist?: string
+}
+
+export interface TrackLyricLine extends LyricLine {
+  parts: TrackLyricLinePart[]
+}
+
 export interface Track {
   src: string
   title: string
   artist: string
   voices: TrackVoice[]
-  lyrics: Array<LyricLine>
+  lyrics: Array<TrackLyricLine>
 }
 
 export interface AssetFile {

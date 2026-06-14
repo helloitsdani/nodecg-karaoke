@@ -1,29 +1,34 @@
-import { LineType, type LyricLine } from "clrc"
+import { LineType } from "clrc"
 import { motion, AnimatePresence } from "motion/react"
 
 import classes from "./Player.module.css"
+import type { TrackLyricLine, TrackVoice } from "../../types"
+import { memo } from "react"
 
 interface LyricLineProps {
-  line: LyricLine
-  nextLine?: LyricLine
+  line: TrackLyricLine
+  nextLine?: TrackLyricLine
+  voices: TrackVoice[]
 }
 
 interface LyricsProps {
-  lines: Array<LyricLine>
+  lines: TrackLyricLine[]
+  voices: TrackVoice[]
   playing: boolean
   currentTime?: number
 }
 
-const PLACEHOLDER_LYRIC_LINE: LyricLine = {
+const PLACEHOLDER_LYRIC_LINE: TrackLyricLine = {
   type: LineType.LYRIC,
+  lineNumber: -1,
   startMillisecond: -1,
   raw: "",
   content: "",
-  lineNumber: -1
+  parts: []
 }
 
 const useVisibleLyrics = (
-  lines: Array<LyricLine>,
+  lines: TrackLyricLine[],
   currentTime: number,
   leadTime: number = 0
 ) => {
@@ -40,13 +45,26 @@ const useVisibleLyrics = (
 
   return [
     lines[activeLineIdx] ?? PLACEHOLDER_LYRIC_LINE,
-    lines[activeLineIdx + 1] as LyricLine | undefined
+    lines[activeLineIdx + 1] as TrackLyricLine | undefined
   ] as const
 }
 
-const LyricsLine = ({ line, nextLine }: LyricLineProps) => {
+const LyricsLine = memo(({ line, nextLine, voices }: LyricLineProps) => {
   if (line.content !== "") {
-    return line.content
+    return line.parts.map((part) => {
+      const voice = voices[Number(part.vocalist)]
+      console.log(part, voice)
+
+      return (
+        <span
+          key={part.index}
+          className={voice ? `vocalist-${voice.vocalist?.name}` : undefined}
+          style={{ color: voice ? voice.vocalist?.colour : undefined }}
+        >
+          {part.content}
+        </span>
+      )
+    })
   }
 
   if (!nextLine) {
@@ -54,9 +72,14 @@ const LyricsLine = ({ line, nextLine }: LyricLineProps) => {
   }
 
   return "♪"
-}
+})
 
-const Lyrics = ({ lines, playing = false, currentTime = 0 }: LyricsProps) => {
+const Lyrics = ({
+  lines,
+  voices,
+  playing = false,
+  currentTime = 0
+}: LyricsProps) => {
   const [currentLine, nextLine] = useVisibleLyrics(lines, currentTime, 300)
 
   return (
@@ -81,7 +104,11 @@ const Lyrics = ({ lines, playing = false, currentTime = 0 }: LyricsProps) => {
                 exit={{ opacity: 0, marginTop: "-56px" }}
                 transition={{ duration: 0.33, ease: "easeInOut" }}
               >
-                <LyricsLine line={currentLine} nextLine={nextLine} />
+                <LyricsLine
+                  line={currentLine}
+                  nextLine={nextLine}
+                  voices={voices}
+                />
               </motion.div>
             )}
 
@@ -99,7 +126,7 @@ const Lyrics = ({ lines, playing = false, currentTime = 0 }: LyricsProps) => {
                   delay: 0.15
                 }}
               >
-                <LyricsLine line={nextLine} />
+                <LyricsLine line={nextLine} voices={voices} />
               </motion.div>
             )}
           </AnimatePresence>

@@ -3,7 +3,12 @@ import { useQuery } from "@tanstack/react-query"
 import { useReplicant } from "@nodecg/react-hooks"
 import { LineType, parse } from "clrc"
 
-import type { Track, TrackData, Vocalist } from "../../types"
+import type {
+  Track,
+  TrackData,
+  TrackLyricLinePart,
+  Vocalist
+} from "../../types"
 
 const DEFAULT_TRACK = {
   title: "Unknown Song",
@@ -11,6 +16,8 @@ const DEFAULT_TRACK = {
   voices: undefined,
   lyrics: undefined
 }
+
+const VOCALIST_TAG_REGEX = /(?:{vo:(\d+)?})?(.+?)(?={|$)/g
 
 const fetchLyrics = async (src?: string) => {
   if (!src) {
@@ -64,9 +71,29 @@ export const useTrack = (
         }
 
         if (line.type === LineType.LYRIC) {
+          const content = line.content.trim()
+          const matches = content.matchAll(VOCALIST_TAG_REGEX)
+          const parts: TrackLyricLinePart[] = []
+
+          matches.forEach((match, idx) => {
+            parts.push({
+              index: idx,
+              content: match[2],
+              vocalist: match[1]
+            })
+          })
+
+          if (parts.length === 0) {
+            parts.push({
+              index: 0,
+              content
+            })
+          }
+
           track.lyrics.push({
             ...line,
-            content: line.content.trim()
+            content,
+            parts
           })
         }
 

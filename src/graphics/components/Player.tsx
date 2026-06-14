@@ -64,6 +64,7 @@ const Player = () => {
         {track && (
           <Lyrics
             key={`${track.src}-lyrics`}
+            voices={track.voices}
             lines={track.lyrics}
             playing={playing}
             currentTime={currentTime}
