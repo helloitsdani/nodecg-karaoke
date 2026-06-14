@@ -36,6 +36,15 @@
         "title": "Karaoke Machine",
         "width": 3,
         "file": "karaoke-machine.html",
+        "workspace": "Karaoke",
+        "headerColor": "#f55db6"
+      },
+      {
+        "name": "vocalists",
+        "title": "Vocalists",
+        "width": 3,
+        "file": "vocalists.html",
+        "workspace": "Karaoke",
         "headerColor": "#f55db6"
       }
     ],

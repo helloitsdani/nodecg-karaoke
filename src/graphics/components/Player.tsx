@@ -6,10 +6,10 @@ import Lyrics from "./Lyrics"
 import Audio from "./Audio"
 
 import classes from "./Player.module.css"
-import { useTrack } from "../hooks/useTrack"
+import { useTrackFromReplicant } from "../../common/hooks/useTrack"
 
 const Player = () => {
-  const track = useTrack()
+  const track = useTrackFromReplicant()
   const [playing, setPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
 
@@ -25,8 +25,6 @@ const Player = () => {
   useEffect(() => {
     setPlaying(false)
   }, [track])
-
-  console.log("playing", playing)
 
   return (
     <>

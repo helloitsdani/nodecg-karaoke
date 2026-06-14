@@ -1,11 +1,9 @@
 import { ConfigProvider, theme } from "antd"
 import React from "react"
 import ReactDOM from "react-dom/client"
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query"
 
-import KaraokeMachine from "./KaraokeMachine/KaraokeMachine"
+import Vocalists from "./Vocalists/Vocalists"
 
-const queryClient = new QueryClient()
 const rootEl = document.getElementById("root")
 const root = ReactDOM.createRoot(rootEl!)
 
@@ -16,9 +14,7 @@ root.render(
         algorithm: theme.darkAlgorithm
       }}
     >
-      <QueryClientProvider client={queryClient}>
-        <KaraokeMachine />
-      </QueryClientProvider>
+      <Vocalists />
     </ConfigProvider>
   </React.StrictMode>
 )

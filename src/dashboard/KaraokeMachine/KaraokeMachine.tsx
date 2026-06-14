@@ -3,12 +3,14 @@ import { Button, Space } from "antd"
 import { CloseCircleFilled, PlayCircleFilled } from "@ant-design/icons"
 import { useReplicant } from "@nodecg/react-hooks"
 
-import type { Track } from "../../types"
+import type { TrackData } from "../../types"
 
 import TrackSelector from "./TrackSelector"
+import TrackVoices from "./TrackVoices"
 
 const KaraokeMachine = () => {
-  const [track, setTrack] = useReplicant<Track>("track")
+  const [trackData, setTrackData] = useReplicant<TrackData>("track.data")
+  const [trackVoices, setTrackVoices] = useReplicant<string[]>("track.voices")
 
   const onStart = useCallback(() => {
     NodeCG.sendMessageToBundle("track.start", "nodecg-karaoke")
@@ -18,9 +20,22 @@ const KaraokeMachine = () => {
     NodeCG.sendMessageToBundle("track.stop", "nodecg-karaoke")
   }, [])
 
+  const onUpdateTrackData = useCallback(
+    (newTrackData: TrackData) => {
+      setTrackData(newTrackData)
+      setTrackVoices([])
+    },
+    [setTrackData, setTrackVoices]
+  )
+
   return (
     <div>
-      <TrackSelector track={track} onUpdateTrack={setTrack} />
+      <TrackSelector trackData={trackData} onUpdateTrack={onUpdateTrackData} />
+      <TrackVoices
+        trackData={trackData}
+        trackVoices={trackVoices}
+        onUpdateTrackVoices={setTrackVoices}
+      />
 
       <Space size="middle">
         <Button
