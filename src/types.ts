@@ -14,6 +14,7 @@ export interface TrackLyricLinePart {
   index: number
   content: string
   vocalist?: string
+  continuation?: boolean
 }
 
 export interface TrackLyricLine extends LyricLine {

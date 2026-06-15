@@ -52,7 +52,6 @@ const Player = () => {
         src={track?.src}
         playing={playing}
         onFinish={() => {
-          console.log("finished")
           setPlaying(false)
         }}
         onTimeUpdate={(newPlayheadPosition) => {

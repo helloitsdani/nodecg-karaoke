@@ -54,13 +54,62 @@
   font-size: 56px;
   line-height: 62px;
   text-align: center;
-
-  color: white;
-  paint-order: stroke fill;
-  -webkit-text-stroke: 0.2em black;
-  filter: drop-shadow(0.05em 0.05em black);
 }
 
 .Line {
   height: 56px;
+}
+
+.Part {
+  --text-color: #fff;
+  --stroke-color: #000;
+  --shadow-color: #000;
+
+  color: var(--text-color);
+  paint-order: stroke fill;
+  -webkit-text-stroke: 0.2em var(--stroke-color);
+  filter: drop-shadow(0.05em 0.05em var(--shadow-color));
+}
+
+.Part--Voiced {
+  --text-color: oklch(from var(--vocalist-colour) 0.998 0.06 h);
+  --stroke-color: var(--vocalist-colour);
+  --shadow-color: color-mix(in oklab, var(--vocalist-colour) 15%, #000);
+}
+
+/* only apply to known vocalists; ensures that other vocalists don't get blank space */
+.Vocalist--dani,
+.Vocalist--b\.na,
+.Vocalist--robin {
+  padding-left: 1.2em;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -0.05em;
+    left: -0.1em;
+    bottom: 0em;
+    width: 1.3em;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+}
+
+.Vocalist--dani {
+  &::before {
+    background-image: url("../assets/vocalists/dani.png?inline");
+  }
+}
+
+.Vocalist--b\.na {
+  &::before {
+    background-image: url("../assets/vocalists/bna.png?inline");
+  }
+}
+
+.Vocalist--robin {
+  &::before {
+    background-image: url("../assets/vocalists/robin.png?inline");
+  }
 }

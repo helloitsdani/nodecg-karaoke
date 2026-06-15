@@ -1,5 +1,6 @@
 import { LineType } from "clrc"
 import { motion, AnimatePresence } from "motion/react"
+import classnames from "classnames"
 
 import classes from "./Player.module.css"
 import type { TrackLyricLine, TrackVoice } from "../../types"
@@ -53,13 +54,23 @@ const LyricsLine = memo(({ line, nextLine, voices }: LyricLineProps) => {
   if (line.content !== "") {
     return line.parts.map((part) => {
       const voice = voices[Number(part.vocalist)]
-      console.log(part, voice)
+      const hasVocalist = !!voice?.vocalist
+      const showVocalistVoice = hasVocalist && !part.continuation
 
       return (
         <span
           key={part.index}
-          className={voice ? `vocalist-${voice.vocalist?.name}` : undefined}
-          style={{ color: voice ? voice.vocalist?.colour : undefined }}
+          className={classnames(classes.Part, {
+            [classes["Part--Voiced"]]: hasVocalist,
+            [classes[`Vocalist--${voice?.vocalist?.name}`]]: showVocalistVoice
+          })}
+          style={
+            voice
+              ? {
+                  "--vocalist-colour": voice.vocalist?.colour
+                }
+              : {}
+          }
         >
           {part.content}
         </span>
@@ -71,7 +82,7 @@ const LyricsLine = memo(({ line, nextLine, voices }: LyricLineProps) => {
     return ""
   }
 
-  return "♪"
+  return <span className={classes.Part}>♪</span>
 })
 
 const Lyrics = ({
@@ -97,12 +108,11 @@ const Lyrics = ({
             {currentLine && (
               <motion.div
                 key={currentLine.lineNumber}
-                data-line={currentLine.lineNumber}
                 className={classes.Line}
                 layout
                 animate={{ scale: 1 }}
-                exit={{ opacity: 0, marginTop: "-56px" }}
-                transition={{ duration: 0.33, ease: "easeInOut" }}
+                exit={{ opacity: 0, y: "-100%" }}
+                transition={{ duration: 0.33, ease: "easeOut" }}
               >
                 <LyricsLine
                   line={currentLine}
@@ -115,14 +125,13 @@ const Lyrics = ({
             {nextLine && (
               <motion.div
                 key={nextLine.lineNumber}
-                data-line={nextLine.lineNumber}
                 className={classes.Line}
                 layout
                 initial={{ opacity: 0, scale: 0.65 }}
                 animate={{ opacity: 1, scale: 0.65 }}
                 transition={{
                   duration: 0.33,
-                  ease: "easeInOut",
+                  ease: "easeOut",
                   delay: 0.15
                 }}
               >

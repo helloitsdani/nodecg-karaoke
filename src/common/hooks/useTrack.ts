@@ -46,6 +46,12 @@ export const useTrack = (
       return null
     }
 
+    /**
+     * Used to track vocalists between lines, so we can determine when
+     * one part continues from another
+     */
+    let previousPartVocalist: string | undefined
+
     return lines.reduce<Track>(
       (track, line) => {
         if (line.type === LineType.METADATA && line.key === "ti") {
@@ -75,12 +81,14 @@ export const useTrack = (
           const matches = content.matchAll(VOCALIST_TAG_REGEX)
           const parts: TrackLyricLinePart[] = []
 
-          matches.forEach((match, idx) => {
+          matches.forEach(([_, vocalist, content], idx) => {
             parts.push({
               index: idx,
-              content: match[2],
-              vocalist: match[1]
+              content,
+              vocalist,
+              continuation: vocalist === previousPartVocalist
             })
+            previousPartVocalist = vocalist
           })
 
           if (parts.length === 0) {
@@ -88,6 +96,7 @@ export const useTrack = (
               index: 0,
               content
             })
+            previousPartVocalist = undefined
           }
 
           track.lyrics.push({
