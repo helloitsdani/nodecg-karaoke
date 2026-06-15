@@ -72,15 +72,22 @@
 }
 
 .Part--Voiced {
-  --text-color: oklch(from var(--vocalist-colour) 0.998 0.06 h);
+  --text-color: oklch(from var(--vocalist-colour) 0.998 0.05 h);
   --stroke-color: var(--vocalist-colour);
   --shadow-color: color-mix(in oklab, var(--vocalist-colour) 15%, #000);
+}
+
+.Vocalist--backing {
+  opacity: 0.825;
+  font-style: italic;
 }
 
 /* only apply to known vocalists; ensures that other vocalists don't get blank space */
 .Vocalist--dani,
 .Vocalist--b\.na,
-.Vocalist--robin {
+.Vocalist--robin,
+.Vocalist--lili,
+.Vocalist--lirie {
   padding-left: 1.2em;
 
   &::before {
@@ -111,5 +118,17 @@
 .Vocalist--robin {
   &::before {
     background-image: url("../assets/vocalists/robin.png?inline");
+  }
+}
+
+.Vocalist--lili {
+  &::before {
+    background-image: url("../assets/vocalists/lili.png?inline");
+  }
+}
+
+.Vocalist--lirie {
+  &::before {
+    background-image: url("../assets/vocalists/lirie.png?inline");
   }
 }

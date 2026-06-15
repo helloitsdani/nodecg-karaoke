@@ -36,5 +36,5 @@ export interface AssetFile {
 
 export interface Vocalist {
   name: string
-  colour: string
+  colour?: string
 }

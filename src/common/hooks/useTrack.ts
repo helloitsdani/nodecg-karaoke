@@ -17,7 +17,7 @@ const DEFAULT_TRACK = {
   lyrics: undefined
 }
 
-const VOCALIST_TAG_REGEX = /(?:{vo:(\d+)?})?(.+?)(?={|$)/g
+const VOCALIST_TAG_REGEX = /(?:{vo:(-?\d+)?})?(.+?)(?={|$)/g
 
 const fetchLyrics = async (src?: string) => {
   if (!src) {
