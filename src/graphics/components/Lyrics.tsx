@@ -16,6 +16,7 @@ interface LyricLineProps {
 interface LyricsProps {
   lines: TrackLyricLine[]
   voices: TrackVoice[]
+  offset: number
   playing: boolean
   currentTime?: number
 }
@@ -36,13 +37,15 @@ const BACKING_VOCALIST: Vocalist = {
 const useVisibleLyrics = (
   lines: TrackLyricLine[],
   currentTime: number,
+  offset: number = 0,
   leadTime: number = 0
 ) => {
   const activeLineStart = currentTime + leadTime
   let activeLineIdx = -1
 
   for (let idx = 0; idx < lines.length; idx++) {
-    if (lines[idx]?.startMillisecond > activeLineStart) {
+    const lineStart = lines[idx]?.startMillisecond + offset
+    if (lineStart > activeLineStart) {
       break
     }
 
@@ -99,11 +102,16 @@ const LyricsLine = memo(
 const Lyrics = ({
   lines,
   voices,
+  offset,
   playing = false,
   currentTime = 0
 }: LyricsProps) => {
-  const [currentLine, nextLine] = useVisibleLyrics(lines, currentTime, 300)
-  console.log(lines)
+  const [currentLine, nextLine] = useVisibleLyrics(
+    lines,
+    currentTime,
+    offset,
+    200
+  )
 
   return (
     <AnimatePresence propagate>

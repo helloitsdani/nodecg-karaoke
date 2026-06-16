@@ -62,6 +62,10 @@ export const useTrack = (
           track.artist = line.value
         }
 
+        if (line.type === LineType.METADATA && line.key === "offset") {
+          track.offset = Number(line.value)
+        }
+
         if (line.type === LineType.METADATA && line.key === "vo") {
           const [voNumber, voName] = line.value.split(":")
           const idx = Number(voNumber)
@@ -112,7 +116,8 @@ export const useTrack = (
         ...DEFAULT_TRACK,
         src: track.song,
         lyrics: [],
-        voices: []
+        voices: [],
+        offset: 0
       }
     )
   }, [track, trackVoices, vocalists, lines])

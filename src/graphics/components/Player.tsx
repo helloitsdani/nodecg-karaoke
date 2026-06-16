@@ -32,7 +32,7 @@ const Player = () => {
         <span className={classes.NowPlaying__Label}>Now Playing ♪</span>
 
         <AnimatePresence propagate>
-          {playing && (
+          {playing && track && (
             <motion.div
               key={`${track?.src}-title`}
               className={classes.NowPlaying__Title}
@@ -42,7 +42,7 @@ const Player = () => {
               exit={{ opacity: 0, y: "-10%" }}
               transition={{ duration: 0.33, ease: "easeInOut" }}
             >
-              {track?.artist} - {track?.title}
+              {track.artist} - {track.title}
             </motion.div>
           )}
         </AnimatePresence>
@@ -65,6 +65,7 @@ const Player = () => {
             key={`${track.src}-lyrics`}
             voices={track.voices}
             lines={track.lyrics}
+            offset={track.offset}
             playing={playing}
             currentTime={currentTime}
           />

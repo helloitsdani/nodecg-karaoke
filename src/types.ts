@@ -26,6 +26,7 @@ export interface Track {
   title: string
   artist: string
   voices: TrackVoice[]
+  offset: number
   lyrics: Array<TrackLyricLine>
 }
 
