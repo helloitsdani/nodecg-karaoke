@@ -31,18 +31,18 @@ const fetchLyrics = async (src?: string) => {
 }
 
 export const useTrack = (
-  track?: TrackData,
+  trackData?: TrackData,
   trackVoices?: string[],
   vocalists?: Vocalist[]
 ) => {
   const { data: lines } = useQuery({
-    enabled: !!track,
-    queryKey: ["lyrics", track?.lyrics],
-    queryFn: () => fetchLyrics(track?.lyrics)
+    enabled: !!trackData,
+    queryKey: ["lyrics", trackData?.lyrics],
+    queryFn: () => fetchLyrics(trackData?.lyrics)
   })
 
   return useMemo(() => {
-    if (!track || !lines) {
+    if (!trackData || !lines) {
       return null
     }
 
@@ -52,7 +52,7 @@ export const useTrack = (
      */
     let previousPartVocalist: string | undefined
 
-    return lines.reduce<Track>(
+    const track = lines.reduce<Track>(
       (track, line) => {
         if (line.type === LineType.METADATA && line.key === "ti") {
           track.title = line.value
@@ -106,7 +106,9 @@ export const useTrack = (
           track.lyrics.push({
             ...line,
             content,
-            parts
+            parts,
+            duration: null,
+            lyricLineNumber: track.lyrics.length + 1
           })
         }
 
@@ -114,13 +116,26 @@ export const useTrack = (
       },
       {
         ...DEFAULT_TRACK,
-        src: track.song,
+        src: trackData.song,
         lyrics: [],
         voices: [],
         offset: 0
       }
     )
-  }, [track, trackVoices, vocalists, lines])
+
+    track.lyrics.forEach((line, lineIdx) => {
+      const nextLine = track.lyrics[lineIdx + 1]
+      let duration = null
+
+      if (nextLine) {
+        duration = nextLine.startMillisecond - line.startMillisecond
+      }
+
+      line.duration = duration
+    })
+
+    return track
+  }, [trackData, trackVoices, vocalists, lines])
 }
 
 export const useTrackFromReplicant = () => {

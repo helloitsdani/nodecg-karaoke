@@ -1,16 +1,18 @@
-import { LineType } from "clrc"
 import { motion, AnimatePresence } from "motion/react"
 import classnames from "classnames"
 
 import classes from "./Player.module.css"
 import type { TrackLyricLine, TrackVoice, Vocalist } from "../../types"
-import { memo } from "react"
+import { memo, useMemo } from "react"
+import { LineType } from "clrc"
+import { Countdown } from "./Countdown"
 
 interface LyricLineProps {
   line: TrackLyricLine
-  nextLine?: TrackLyricLine
+  isLastLine: boolean
   voices: TrackVoice[]
   dedupeVocalistIcons?: boolean
+  currentTime?: number
 }
 
 interface LyricsProps {
@@ -23,11 +25,13 @@ interface LyricsProps {
 
 const PLACEHOLDER_LYRIC_LINE: TrackLyricLine = {
   type: LineType.LYRIC,
-  lineNumber: -1,
-  startMillisecond: -1,
+  lineNumber: 0,
+  lyricLineNumber: 0,
+  startMillisecond: 0,
   raw: "",
   content: "",
-  parts: []
+  parts: [],
+  duration: null
 }
 
 const BACKING_VOCALIST: Vocalist = {
@@ -39,63 +43,90 @@ const useVisibleLyrics = (
   currentTime: number,
   offset: number = 0,
   leadTime: number = 0
-) => {
-  const activeLineStart = currentTime + leadTime
-  let activeLineIdx = -1
+) =>
+  useMemo(() => {
+    const activeLineStart = currentTime + leadTime
+    let activeLineIdx = -1
 
-  for (let idx = 0; idx < lines.length; idx++) {
-    const lineStart = lines[idx]?.startMillisecond + offset
-    if (lineStart > activeLineStart) {
-      break
+    for (let idx = 0; idx < lines.length; idx++) {
+      const lineStart = lines[idx]?.startMillisecond + offset
+      if (lineStart > activeLineStart) {
+        break
+      }
+
+      activeLineIdx = idx
     }
 
-    activeLineIdx = idx
-  }
+    let activeLine: TrackLyricLine
+    const nextLine = lines[activeLineIdx + 1] as TrackLyricLine | undefined
 
-  return [
-    lines[activeLineIdx] ?? PLACEHOLDER_LYRIC_LINE,
-    lines[activeLineIdx + 1] as TrackLyricLine | undefined
-  ] as const
-}
+    if (activeLineIdx === -1) {
+      activeLine = {
+        ...PLACEHOLDER_LYRIC_LINE,
+        duration: (lines[0]?.startMillisecond ?? 0) + offset
+      }
+    } else {
+      activeLine = lines[activeLineIdx] ?? PLACEHOLDER_LYRIC_LINE
+    }
+
+    return [activeLine, nextLine] as const
+  }, [lines, currentTime, offset, leadTime])
 
 const LyricsLine = memo(
-  ({ line, nextLine, voices, dedupeVocalistIcons = false }: LyricLineProps) => {
-    if (line.content !== "") {
-      return line.parts.map((part) => {
-        const voice = voices[Number(part.vocalist)]
-        const isBackingVocalist = part.vocalist === "-1"
-        const vocalist =
-          part.vocalist === "-1" ? BACKING_VOCALIST : voice?.vocalist
-        const showVocalistVoice = dedupeVocalistIcons
-          ? !part.continuation && !!vocalist
-          : true
+  ({
+    line,
+    isLastLine,
+    voices,
+    currentTime,
+    dedupeVocalistIcons = false
+  }: LyricLineProps) => {
+    if (line.content === "") {
+      if (isLastLine) {
+        return ""
+      }
 
-        return (
-          <span
-            key={part.index}
-            className={classnames(classes.Part, {
-              [classes["Part--Voiced"]]: !!vocalist && !isBackingVocalist,
-              [classes[`Vocalist--${vocalist?.name}`]]: showVocalistVoice
-            })}
-            style={
-              voice
-                ? {
-                    "--vocalist-colour": vocalist?.colour
-                  }
-                : {}
-            }
-          >
-            {part.content}
-          </span>
-        )
-      })
+      return (
+        <span className={classnames(classes.Part, classes["Part--empty"])}>
+          <span className={classes["Part--placeholder"]}>♪</span>{" "}
+          {line.duration && (
+            <Countdown
+              start={line.startMillisecond}
+              duration={line.duration}
+              time={currentTime}
+            />
+          )}
+        </span>
+      )
     }
 
-    if (!nextLine) {
-      return ""
-    }
+    return line.parts.map((part) => {
+      const voice = voices[Number(part.vocalist)]
+      const isBackingVocalist = part.vocalist === "-1"
+      const vocalist =
+        part.vocalist === "-1" ? BACKING_VOCALIST : voice?.vocalist
+      const showVocalistVoice = dedupeVocalistIcons
+        ? !part.continuation && !!vocalist
+        : true
 
-    return <span className={classes.Part}>♪</span>
+      return (
+        <span
+          key={part.index}
+          className={classnames(classes.Part, {
+            [classes["Part--Voiced"]]: !!vocalist && !isBackingVocalist,
+            [classes[`Vocalist--${vocalist?.name}`]]: showVocalistVoice
+          })}
+          style={
+            voice
+              ? {
+                  "--vocalist-colour": vocalist?.colour
+                }
+              : {}
+          }
+        >
+          {part.content}
+        </span>
+      )
+    })
   }
 )
 
@@ -136,7 +167,8 @@ const Lyrics = ({
               >
                 <LyricsLine
                   line={currentLine}
-                  nextLine={nextLine}
+                  currentTime={currentTime}
+                  isLastLine={currentLine.lyricLineNumber === lines.length}
                   voices={voices}
                 />
               </motion.div>
@@ -155,7 +187,11 @@ const Lyrics = ({
                   delay: 0.15
                 }}
               >
-                <LyricsLine line={nextLine} voices={voices} />
+                <LyricsLine
+                  line={nextLine}
+                  isLastLine={nextLine.lyricLineNumber === lines.length}
+                  voices={voices}
+                />
               </motion.div>
             )}
           </AnimatePresence>

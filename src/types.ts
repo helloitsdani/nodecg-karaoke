@@ -14,11 +14,15 @@ export interface TrackLyricLinePart {
   index: number
   content: string
   vocalist?: string
+  /** Whether or not this part has the same vocalist as the previous part */
   continuation?: boolean
 }
 
 export interface TrackLyricLine extends LyricLine {
   parts: TrackLyricLinePart[]
+  duration: number | null
+  /* which line of the lyrics this is; lineNumber is the original LRC file's line number */
+  lyricLineNumber: number
 }
 
 export interface Track {

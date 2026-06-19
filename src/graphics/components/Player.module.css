@@ -77,6 +77,18 @@
   --shadow-color: color-mix(in oklab, var(--vocalist-colour) 15%, #000);
 }
 
+.Part--placeholder {
+  flex-grow: 0;
+}
+
+.Part--empty {
+  display: inline-flex;
+  gap: 0.25em;
+  width: 100px;
+  opacity: 0.825;
+  font-variant-numeric: tabular-nums;
+}
+
 .Vocalist--backing {
   opacity: 0.825;
   font-style: italic;
